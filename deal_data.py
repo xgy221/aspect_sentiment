@@ -11,17 +11,19 @@ def deal_glove():
     words = []
     wordVectors = []
 
-    with open('data/glove.6B.50d.txt') as glove:
+    with open('data/glove.840B.300d.txt') as glove:
         for line in glove:
             line = line.split()
-            words.append(line[0].encode('utf-8'))
-            wordVectors.append(list(map(float, line[1:])))
-
+            try:
+                words.append(line[0].encode('utf-8'))
+                wordVectors.append(list(map(float, line[1:])))
+            except ValueError:
+                continue
     # 存储结果
     words = np.array(words)
-    np.save('data/words.npy', words)
+    np.save('data/words_840B_300.npy', words)
     wordVectors = np.array(wordVectors, dtype=np.float32)
-    np.save('data/wordVectors.npy', wordVectors)
+    np.save('data/wordVectors_840B_300.npy', wordVectors)
 
 
 def restaurants():
@@ -56,13 +58,8 @@ def cosine(aspect, word):
 def list_add(a, b):
     c = []
     for i in range(len(a)):
-        c.append(a[i]+b[i])
+        c.append(a[i] + b[i])
     return c
 
-def list_(a, b):
-    c = []
-    for i in range(len(a)):
-        c.append(a[i]+b[i])
-    return c
 
-# deal_glove()
+deal_glove()

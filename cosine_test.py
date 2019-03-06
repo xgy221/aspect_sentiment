@@ -1,6 +1,9 @@
 import numpy as np
 import deal_data
 import string
+from nltk.corpus import stopwords as pw
+
+stop_words = set(pw.words('english'))
 
 sentences = deal_data.restaurants()
 aspects = ['service', 'ambience', 'anecdotes/miscellaneous', 'price', 'food']
@@ -43,11 +46,12 @@ for s in sentences:
     average_cosine = [s['id']]
     for w in s_w:
         w = w.lower()
-        try:
-            word_index = wordsList.index(w)
-            sentences_vector.append(wordVectors[word_index])
-        except ValueError:
-            continue
+        if w not in stop_words:
+            try:
+                word_index = wordsList.index(w)
+                sentences_vector.append(wordVectors[word_index])
+            except ValueError:
+                continue
     for aspect in aspect_vector:
         sum_cosine = 0
         for word_vector in sentences_vector:
@@ -65,9 +69,13 @@ for s in sentences:
 #     print(sentences[i])
 
 count = 0
+count_empty = 0
 for i in range(len(sentences)):
-    index = cosine[i].index(max(cosine[i][1:]))
-    if aspects[index-1] in sentences[i]['aspectCategories']:
-        count = count + 1
-
-print(count/len(sentences))
+    if len(cosine[i]) == 1:
+        count_empty = count_empty + 1
+    else:
+        index = cosine[i].index(max(cosine[i][1:]))
+        if aspects[index-1] in sentences[i]['aspectCategories']:
+            count = count + 1
+print(count_empty)
+print(count/(len(sentences)-count_empty))
