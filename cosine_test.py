@@ -8,23 +8,25 @@ stop_words = set(pw.words('english'))
 sentences = deal_data.restaurants()
 aspects = ['service', 'ambience', 'anecdotes/miscellaneous', 'price', 'food']
 
-wordsList = np.load('data/words.npy')
+wordsList = np.load('data/words_840B_300.npy')
 print('Loaded the word list!')
 wordsList = wordsList.tolist()  # Originally loaded as numpy array
 wordsList = [word.decode('UTF-8') for word in wordsList]  # Encode words as UTF-8
-wordVectors = np.load('data/wordVectors.npy')
+index = list(range(len(wordsList)))
+words_index = dict(zip(index, wordsList))
+wordVectors = np.load('data/wordVectors_840B_300.npy')
 print('Loaded the word vectors!')
 
 aspect_vector = []
 for aspect in aspects:
     if len(aspect) < 10:
-        aspect_index = wordsList.index(aspect)
+        aspect_index = list(words_index.keys())[list(words_index.values()).index(aspect)]
         aspect_vector.append(wordVectors[aspect_index])
     else:
         aspect_term = aspect.split('/')
         sum_term = 0
         for aspect_term1 in aspect_term:
-            aspect_index = wordsList.index(aspect_term1)
+            aspect_index = list(words_index.keys())[list(words_index.values()).index(aspect_term1)]
             sum_term = sum_term + wordVectors[aspect_index]
         aspect_vector.append(sum_term / len(aspect_term))
 # for aspect in aspect_vector:
@@ -48,7 +50,7 @@ for s in sentences:
         w = w.lower()
         if w not in stop_words:
             try:
-                word_index = wordsList.index(w)
+                word_index = list(words_index.keys())[list(words_index.values()).index(w)]
                 sentences_vector.append(wordVectors[word_index])
             except ValueError:
                 continue
@@ -75,7 +77,9 @@ for i in range(len(sentences)):
         count_empty = count_empty + 1
     else:
         index = cosine[i].index(max(cosine[i][1:]))
-        if aspects[index-1] in sentences[i]['aspectCategories']:
+        if aspects[index - 1] in sentences[i]['aspectCategories']:
             count = count + 1
 print(count_empty)
-print(count/(len(sentences)-count_empty))
+print(count / (len(sentences) - count_empty))
+
+# 0.5004935834155972

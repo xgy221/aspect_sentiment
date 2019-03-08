@@ -11,19 +11,25 @@ def deal_glove():
     words = []
     wordVectors = []
 
+    count = 0
+
     with open('data/glove.840B.300d.txt') as glove:
         for line in glove:
             line = line.split()
-            try:
+            if len(line) == 301:
                 words.append(line[0].encode('utf-8'))
                 wordVectors.append(list(map(float, line[1:])))
-            except ValueError:
-                continue
+            else:
+                count = count + 1
     # 存储结果
+    print(count)
     words = np.array(words)
     np.save('data/words_840B_300.npy', words)
     wordVectors = np.array(wordVectors, dtype=np.float32)
     np.save('data/wordVectors_840B_300.npy', wordVectors)
+    # for vector in wordVectors:
+    #     if len(vector) != 300:
+    #         print(wordVectors.index(vector))
 
 
 def restaurants():
@@ -62,4 +68,4 @@ def list_add(a, b):
     return c
 
 
-deal_glove()
+# deal_glove()

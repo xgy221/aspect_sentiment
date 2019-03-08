@@ -8,11 +8,13 @@ stop_words = set(pw.words('english'))
 sentences = deal_data.restaurants()
 aspects = ['service', 'ambience', 'anecdotes/miscellaneous', 'price', 'food']
 
-wordsList = np.load('data/words.npy')
+wordsList = np.load('data/words_840B_300.npy')
 print('Loaded the word list!')
 wordsList = wordsList.tolist()  # Originally loaded as numpy array
 wordsList = [word.decode('UTF-8') for word in wordsList]  # Encode words as UTF-8
-wordVectors = np.load('data/wordVectors.npy')
+index = list(range(len(wordsList)))
+words_index = dict(zip(index, wordsList))
+wordVectors = np.load('data/wordVectors_840B_300.npy')
 print('Loaded the word vectors!')
 
 aspect_keywords = []
@@ -21,7 +23,7 @@ with open('data/keywords.txt') as key:
         line = line_data.split()
         keywords_vector = []
         for word in line[1:]:
-            aspect_index = wordsList.index(word)
+            aspect_index = list(words_index.keys())[list(words_index.values()).index(word)]
             keywords_vector.append(wordVectors[aspect_index])
         aspect_keywords.append(keywords_vector)
 # for aspect in aspect_vector:
@@ -45,7 +47,7 @@ for s in sentences:
         w = w.lower()
         if w not in stop_words:
             try:
-                word_index = wordsList.index(w)
+                word_index = list(words_index.keys())[list(words_index.values()).index(w)]
                 sentences_vector.append(wordVectors[word_index])
             except ValueError:
                 continue
@@ -81,3 +83,5 @@ for i in range(len(sentences)):
             count = count + 1
 
 print(count/(len(sentences)-count_empty))
+
+# 0.5435998683777559

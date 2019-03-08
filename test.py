@@ -69,19 +69,19 @@ import nltk
 
 import numpy as np
 import deal_data
-import string
 from nltk.corpus import stopwords as pw
 
 stop_words = set(pw.words('english'))
 
 sentences = deal_data.restaurants()
-aspects = ['service', 'ambience', 'anecdotes/miscellaneous', 'price', 'food']
 
-wordsList = np.load('data/words_300.npy')
+wordsList = np.load('data/words_840B_300.npy')
 print('Loaded the word list!')
 wordsList = wordsList.tolist()  # Originally loaded as numpy array
 wordsList = [word.decode('UTF-8') for word in wordsList]  # Encode words as UTF-8
-wordVectors = np.load('data/wordVectors_300.npy')
+index = list(range(len(wordsList)))
+words_index = dict(zip(index, wordsList))
+wordVectors = np.load('data/wordVectors_840B_300.npy')
 print('Loaded the word vectors!')
 
 aspect_keywords = []
@@ -90,7 +90,7 @@ with open('data/keyword_test.txt') as key:
         line = line_data.split()
         keywords_vector = []
         for word in line:
-            aspect_index = wordsList.index(word)
+            aspect_index = list(words_index.keys())[list(words_index.values()).index(word)]
             keywords_vector.append(wordVectors[aspect_index])
         aspect_keywords.append(keywords_vector)
 
