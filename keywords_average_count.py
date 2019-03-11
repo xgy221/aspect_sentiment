@@ -1,6 +1,7 @@
 # 给定aspect以及其对应的keywords，对于一个aspect，
 # 计算句子中word与keywords的cosine值均值作为该单词的特征。
-# 再计算句子中所有word的均值作为句子的特征，取其中最大者作为句子的aspect。
+# 统计单词特征在一个阈值以上的单词个数作为属于aspect的单词个数
+# 单词个数最多者为该句子的aspect（可能有多个aspect）
 
 import numpy as np
 import deal_data
@@ -38,7 +39,7 @@ with open('data/keywords.txt') as key:
 # word_index = wordsList.index('ambience')
 # print(wordVectors[word_index])
 
-cosine = []
+count_s = []
 for s in sentences:
     for i in s['text']:
         if i in string.punctuation:  # 如果字符是标点符号的话就将其替换为空格
@@ -54,37 +55,30 @@ for s in sentences:
                 sentences_vector.append(wordVectors[word_index])
             except ValueError:
                 continue
+    count = []
     for data in aspect_keywords:
         word_cosine = []
+        c = 0
         for word_vector in sentences_vector:
             sum_cosine = 0
             for i in range(len(data)):
                 sum_cosine = sum_cosine + deal_data.cosine(data[i], word_vector)
             word_cosine.append(sum_cosine/len(data))
-        if len(sentences_vector) != 0:
-            average_cosine.append(sum(word_cosine) / len(word_cosine))
-    cosine.append(average_cosine)
+            if sum_cosine/len(data) > 0.65:
+                c = c + 1
+        count.append(c)
 
-# print(cosine)
+    count_s.append(count)
 
-# 计算准确率accuracy:两个及以上aspect的句子怎么算？
+for count in count_s:
+    print(count)
 
-# print(len(sentences))
-# print(len(cosine))
-# for i in range(len(sentences)):
-#     print(cosine[i])
-#     print(sentences[i])
-
-count = 0
-count_empty = 0
+count_a = 0
 for i in range(len(sentences)):
-    if len(cosine[i]) == 1:
-        count_empty = count_empty + 1
-    else:
-        index = cosine[i].index(max(cosine[i][1:]))
-        if aspects[index-1] in sentences[i]['aspectCategories']:
-            count = count + 1
+    index = count_s[i].index(max(count_s[i]))
+    if aspects[index] in sentences[i]['aspectCategories']:
+        count_a = count_a + 1
 
-print(count/(len(sentences)-count_empty))
+print(count_a / len(sentences))
 
 # 0.491609081934847

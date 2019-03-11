@@ -1,3 +1,6 @@
+# 给定aspect以及其对应的keywords，计算句子中所有word与aspect的
+# cosine均值作为句子的特征，取其中最大者作为句子的aspect。
+
 import numpy as np
 import deal_data
 import string
@@ -38,7 +41,6 @@ for aspect in aspects:
 # print(wordVectors[word_index])
 
 cosine = []
-i = 0
 for s in sentences:
     for i in s['text']:
         if i in string.punctuation:  # 如果字符是标点符号的话就将其替换为空格

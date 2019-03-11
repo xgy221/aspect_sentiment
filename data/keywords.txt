@@ -1,5 +1,4 @@
-service service
+service service servers staff
 ambience ambience atmosphere environment setting
-anecdotes/miscellaneous spreads dosa dining dinner
 price price value worth quality
 food food meats menu kitchen

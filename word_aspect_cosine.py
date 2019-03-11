@@ -1,3 +1,7 @@
+# 给定aspect代表的单词，求句子中每个单词与aspect的cosine值，
+# 计算句子中与aspect单词的cosine值在一个阈值（0.7）上的单词个数，
+# 单词个数最多者为该句子的aspect（可能有多个aspect）。
+
 import numpy as np
 import deal_data
 import string
@@ -38,7 +42,6 @@ for aspect in aspects:
 # print(wordVectors[word_index])
 
 # cosine = []
-i = 0
 count_s = []
 for s in sentences:
     tran_tab = str.maketrans({key: None for key in string.punctuation})
@@ -54,13 +57,13 @@ for s in sentences:
                 sentences_vector.append(wordVectors[word_index])
             except ValueError:
                 continue
-    count = []
+    count = [s['id']]
     for aspect in aspect_vector:
         word_aspect_cosine = []
         i = 0
         for word_vector in sentences_vector:
             word_aspect_cosine.append(deal_data.cosine(aspect, word_vector))
-            if deal_data.cosine(aspect, word_vector) > 0.65:
+            if deal_data.cosine(aspect, word_vector) > 0.70:
                 i = i + 1
         count.append(i)
         aspect_cosine.append(word_aspect_cosine)
@@ -69,9 +72,8 @@ for s in sentences:
     # print(aspect_cosine)
     # cosine.append(aspect_cosine)
 #
-# for data in cosine:
-#     print(data)
-# print(len(count_s))
+for data in count_s:
+    print(data)
 
 count_a = 0
 for i in range(len(sentences)):
@@ -81,4 +83,7 @@ for i in range(len(sentences)):
 
 print(count_a / len(sentences))
 
-# 0.433311432325887
+# 0.65 0.433311432325887
+# 0.70 0.4819316688567674
+# 0.66 0.46
+# 0.68 0.47

@@ -1,7 +1,3 @@
-# 给定aspect以及其对应的keywords，对于一个aspect，
-# 计算句子中word与keywords的cosine值均值作为该单词的特征。
-# 再计算句子中所有word的均值作为句子的特征，取其中最大者作为句子的aspect。
-
 import numpy as np
 import deal_data
 import string
@@ -38,14 +34,16 @@ with open('data/keywords.txt') as key:
 # word_index = wordsList.index('ambience')
 # print(wordVectors[word_index])
 
-cosine = []
+count_sum = []
+i = 0
+
 for s in sentences:
     for i in s['text']:
         if i in string.punctuation:  # 如果字符是标点符号的话就将其替换为空格
             s['text'] = s['text'].replace(i, " ")
     s_w = s['text'].split()
     sentences_vector = []
-    average_cosine = [s['id']]
+    count_s = [s['id']]
     for w in s_w:
         w = w.lower()
         if w not in stop_words:
@@ -55,36 +53,26 @@ for s in sentences:
             except ValueError:
                 continue
     for data in aspect_keywords:
-        word_cosine = []
+        count = 0
         for word_vector in sentences_vector:
-            sum_cosine = 0
             for i in range(len(data)):
-                sum_cosine = sum_cosine + deal_data.cosine(data[i], word_vector)
-            word_cosine.append(sum_cosine/len(data))
-        if len(sentences_vector) != 0:
-            average_cosine.append(sum(word_cosine) / len(word_cosine))
-    cosine.append(average_cosine)
+                if deal_data.cosine(data[i], word_vector) > 0.70:
+                    count = count + 1
+                    break
+        count_s.append(count)
+    count_sum.append(count_s)
 
-# print(cosine)
+for count_s in count_sum:
+    print(count_s)
 
-# 计算准确率accuracy:两个及以上aspect的句子怎么算？
-
-# print(len(sentences))
-# print(len(cosine))
+# count_a = 0
 # for i in range(len(sentences)):
-#     print(cosine[i])
-#     print(sentences[i])
+#     index = count_sum[i].index(max(count_sum[i][1:]))
+#     if aspects[index] in sentences[i]['aspectCategories']:
+#         count_a = count_a + 1
+#
+# print(count_a / len(sentences))
 
-count = 0
-count_empty = 0
-for i in range(len(sentences)):
-    if len(cosine[i]) == 1:
-        count_empty = count_empty + 1
-    else:
-        index = cosine[i].index(max(cosine[i][1:]))
-        if aspects[index-1] in sentences[i]['aspectCategories']:
-            count = count + 1
 
-print(count/(len(sentences)-count_empty))
 
-# 0.491609081934847
+

@@ -89,7 +89,7 @@ with open('data/keyword_test.txt') as key:
     for line_data in key:
         line = line_data.split()
         keywords_vector = []
-        for word in line:
+        for word in line[1:]:
             aspect_index = list(words_index.keys())[list(words_index.values()).index(word)]
             keywords_vector.append(wordVectors[aspect_index])
         aspect_keywords.append(keywords_vector)
