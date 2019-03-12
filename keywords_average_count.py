@@ -60,11 +60,11 @@ for s in sentences:
         word_cosine = []
         c = 0
         for word_vector in sentences_vector:
-            sum_cosine = 0
+            label = set()
             for i in range(len(data)):
-                sum_cosine = sum_cosine + deal_data.cosine(data[i], word_vector)
-            word_cosine.append(sum_cosine/len(data))
-            if sum_cosine/len(data) > 0.65:
+                if deal_data.cosine(data[i], word_vector) > 0.7:
+                    label.add(1)
+            if 1 in label:
                 c = c + 1
         count.append(c)
 
@@ -75,8 +75,14 @@ for count in count_s:
 
 count_a = 0
 for i in range(len(sentences)):
-    index = count_s[i].index(max(count_s[i]))
-    if aspects[index] in sentences[i]['aspectCategories']:
+    index = [i for i, data in enumerate(count_s[i][1:]) if data == max(count_s[i][1:])]
+    label_max = set()
+    for data in index:
+        if aspects[data] in sentences[i]['aspectCategories']:
+            label_max.add(1)
+        else:
+            label_max.add(0)
+    if len(label_max) == 1 and list(label_max)[0] == 1:
         count_a = count_a + 1
 
 print(count_a / len(sentences))

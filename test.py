@@ -53,19 +53,19 @@ import nltk
 # for data in aspect_keywords:
 #     print(data)
 #
-# from nltk.corpus import stopwords as pw
-#
-# stop_words = set(pw.words('english'))
-#
-# sentence = ['but', 'the', 'staff', 'was', 'so', 'horrible', 'to', 'us']
-# filtered_sentence = []
-#
-# for w in sentence:
-#     if w not in stop_words:
-#         filtered_sentence.append(w)
-#
-# print(sentence)
-# print(filtered_sentence)
+from nltk.corpus import stopwords as pw
+
+stop_words = set(pw.words('english'))
+
+sentence = ['but', 'the', 'staff', 'was', 'so', 'horrible', 'to', 'us']
+filtered_sentence = []
+
+for w in sentence:
+    if w not in stop_words:
+        filtered_sentence.append(w)
+
+print(sentence)
+print(filtered_sentence)
 
 import numpy as np
 import deal_data

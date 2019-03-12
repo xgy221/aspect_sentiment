@@ -1,15 +1,9 @@
-import deal_data
+from nltk.corpus import stopwords as pw
 
-a = [1, 2, 3, 1, 3, 1]
+stop_words = set(pw.words('english'))
 
-id1 = [i for i, data in enumerate(a) if data == max(a)]
+s_w = ['I','am','going','to','the','mid','town','location','next']
 
-print(id1)
-
-b = set()
-
-b.add(1)
-b.add(1)
-
-print(list(b)[0])
-print(len(b))
+for w in s_w:
+    if w not in stop_words:
+        print(w)
