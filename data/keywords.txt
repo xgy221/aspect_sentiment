@@ -1,4 +1,5 @@
 service service servers staff
 ambience ambience atmosphere environment setting
+anecdotes/miscellaneous
 price price value worth quality
 food food meats menu kitchen

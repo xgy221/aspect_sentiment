@@ -1,3 +1,15 @@
-a = [1, 2, 3, 1, 2, 3]
+import deal_data
 
-max = [i for i, x in enumerate(a) if x == max(a)]
+a = [1, 2, 3, 1, 3, 1]
+
+id1 = [i for i, data in enumerate(a) if data == max(a)]
+
+print(id1)
+
+b = set()
+
+b.add(1)
+b.add(1)
+
+print(list(b)[0])
+print(len(b))

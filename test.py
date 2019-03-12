@@ -89,9 +89,17 @@ with open('data/keyword_test.txt') as key:
     for line_data in key:
         line = line_data.split()
         keywords_vector = []
-        for word in line[1:]:
-            aspect_index = list(words_index.keys())[list(words_index.values()).index(word)]
-            keywords_vector.append(wordVectors[aspect_index])
+        for word in line:
+            if len(word) < 10:
+                aspect_index = list(words_index.keys())[list(words_index.values()).index(word)]
+                keywords_vector.append(wordVectors[aspect_index])
+            else:
+                aspect_term = word.split('/')
+                sum_term = 0
+                for aspect_term1 in aspect_term:
+                    aspect_index = list(words_index.keys())[list(words_index.values()).index(aspect_term1)]
+                    sum_term = sum_term + wordVectors[aspect_index]
+                keywords_vector.append(sum_term / len(aspect_term))
         aspect_keywords.append(keywords_vector)
 
 for aspect in aspect_keywords:

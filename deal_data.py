@@ -68,4 +68,11 @@ def list_add(a, b):
     return c
 
 
+def count_cosine(a):
+    count = 0
+    for i in a:
+        if i < 0.7:
+            count = count + 1
+    return count
+
 # deal_glove()
