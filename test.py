@@ -54,6 +54,8 @@ import nltk
 #     print(data)
 #
 from nltk.corpus import stopwords as pw
+from nltk.text import TextCollection
+from nltk.tokenize import word_tokenize
 
 stop_words = set(pw.words('english'))
 
@@ -70,18 +72,19 @@ print(filtered_sentence)
 import numpy as np
 import deal_data
 from nltk.corpus import stopwords as pw
+import string
 
 stop_words = set(pw.words('english'))
 
 sentences = deal_data.restaurants()
 
-wordsList = np.load('data/words_840B_300.npy')
+wordsList = np.load('data/words.npy')
 print('Loaded the word list!')
 wordsList = wordsList.tolist()  # Originally loaded as numpy array
 wordsList = [word.decode('UTF-8') for word in wordsList]  # Encode words as UTF-8
 index = list(range(len(wordsList)))
 words_index = dict(zip(index, wordsList))
-wordVectors = np.load('data/wordVectors_840B_300.npy')
+wordVectors = np.load('data/wordVectors.npy')
 print('Loaded the word vectors!')
 
 aspect_keywords = []
@@ -102,7 +105,29 @@ with open('data/keyword_test.txt') as key:
                 keywords_vector.append(sum_term / len(aspect_term))
         aspect_keywords.append(keywords_vector)
 
+sentence = []
+for s in sentences:
+    for i in s['text']:
+        if i in string.punctuation:  # 如果字符是标点符号的话就将其替换为空格
+            s['text'] = s['text'].replace(i, " ")
+    sentence.append(s['text'])
+
+sents = [word_tokenize(sent) for sent in sentence]
+
+corpus = TextCollection(sents)
+
+tf_idf = []
+for sen in sents:
+    td = []
+    for data in sen:
+        elem = []
+        data = data.lower()
+        if data not in stop_words:
+            # print(data)
+            td.append(corpus.tf_idf(data, corpus))
+    tf_idf.append(td)
+
 for aspect in aspect_keywords:
     for vector in aspect[1:]:
-        print(deal_data.cosine(aspect[0], vector))
+        print(deal_data.cosine(aspect[0], vector)*corpus.tf_idf('food', corpus))
     print('\n')

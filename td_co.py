@@ -1,9 +1,13 @@
-from nltk.text import TextCollection
-from nltk.tokenize import word_tokenize
-import deal_data
+# 给定aspect代表的单词，求句子中每个单词与aspect的cosine值，
+# 计算句子中与aspect单词的cosine值在一个阈值（0.7）上的单词个数，
+# 单词个数最多者为该句子的aspect（可能有多个aspect）。
+
 import numpy as np
+import deal_data
 import string
 from nltk.corpus import stopwords as pw
+from nltk.text import TextCollection
+from nltk.tokenize import word_tokenize
 
 stop_words = set(pw.words('english'))
 
@@ -31,6 +35,13 @@ for aspect in aspects:
             aspect_index = list(words_index.keys())[list(words_index.values()).index(aspect_term1)]
             sum_term = sum_term + wordVectors[aspect_index]
         aspect_vector.append(sum_term / len(aspect_term))
+# for aspect in aspect_vector:
+#     print(aspect)
+
+# print(deal_data.cosine([1,1],[0,1]))
+
+# word_index = wordsList.index('ambience')
+# print(wordVectors[word_index])
 
 sentence = []
 for s in sentences:
@@ -50,45 +61,59 @@ for sen in sents:
         elem = []
         data = data.lower()
         if data not in stop_words:
-            # print(data)
             td.append(corpus.tf_idf(data, corpus))
     tf_idf.append(td)
 
-# print(tf_idf[0][3])
 
-cosine = []
+# cosine = []
+count_s = []
+aspect_cosine = []
 for i in range(len(sents)):
     sentences_vector = []
-    average_cosine = []
     for w in sents[i]:
         w = w.lower()
         if w not in stop_words:
             try:
-                # print(w)
                 word_index = list(words_index.keys())[list(words_index.values()).index(w)]
                 sentences_vector.append(wordVectors[word_index])
             except ValueError:
                 continue
+    count = []
     for aspect in aspect_vector:
-        sum_cosine = 0
+        word_aspect_cosine = []
+        ci = 0
         for j in range(len(sentences_vector)):
-            sum_cosine = sum_cosine + \
-                         deal_data.cosine(aspect, sentences_vector[j]) * tf_idf[i][j]
-        if len(sentences_vector) != 0:
-            average_cosine.append(sum_cosine / len(sentences_vector))
-    cosine.append(average_cosine)
+            data_td = deal_data.cosine(aspect, sentences_vector[j]) * tf_idf[i][j]
+            word_aspect_cosine.append(data_td)
+            if data_td > 0.0025:
+                ci = ci + 1
+        count.append(ci)
+        aspect_cosine.append(word_aspect_cosine)
 
-for data in cosine:
-    print(data)
+    count_s.append(count)
+    # # print(aspect_cosine)
+    # cosine.append(aspect_cosine)
 
-count = 0
-count_empty = 0
-for i in range(len(sentences)):
-    if len(cosine[i]) == 0:
-        count_empty = count_empty + 1
-    else:
-        index = cosine[i].index(max(cosine[i]))
-        if aspects[index - 1] in sentences[i]['aspectCategories']:
-            count = count + 1
-print(count_empty)
-print(count / (len(sentences) - count_empty))
+print(len(sents))
+print(len(sentences))
+print(len(count_s))
+#
+count_a = 0
+for i in range(len(sents)):
+    index = [j for j, data in enumerate(count_s[i]) if data == max(count_s[i])]
+    label = set()
+    for data in index:
+        if aspects[data] in sentences[i]['aspectCategories']:
+            label.add(1)
+        else:
+            label.add(0)
+    if len(label) == 1 and list(label)[0] == 1:
+        count_a = count_a + 1
+
+print(count_a / len(sentences))
+
+# 0.65 0.433311432325887
+# 0.70 0.4819316688567674
+# 0.66 0.46
+# 0.68 0.47
+# 0.70 0.1360052562417871
