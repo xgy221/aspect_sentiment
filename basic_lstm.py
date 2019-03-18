@@ -56,16 +56,15 @@ def clean_sentences(string):
 
 
 def get_sentence_matrix(sentence):
-    arr = np.zeros([batchSize, max_length])
-    sentenceMatrix = np.zeros([batchSize, max_length], dtype='int32')
-    cleanedSentence = clean_sentences(sentence)
-    split = cleanedSentence.split()
+    sentence_matrix = np.zeros([batchSize, max_length], dtype='int32')
+    cleaned_sentence = clean_sentences(sentence)
+    split = cleaned_sentence.split()
     for indexCounter, word in enumerate(split):
         try:
-            sentenceMatrix[0, indexCounter] = wordsList.index(word)
+            sentence_matrix[0, indexCounter] = wordsList.index(word)
         except ValueError:
-            sentenceMatrix[0, indexCounter] = 399999  # Vector for unkown words
-    return sentenceMatrix
+            sentence_matrix[0, indexCounter] = 399999  # Vector for unkown words
+    return sentence_matrix
 
 
 inputText = "That movie was terrible."
@@ -73,8 +72,9 @@ inputMatrix = get_sentence_matrix(inputText)
 predictedSentiment = sess.run(prediction, {input_data: inputMatrix})[0]
 # predictedSentiment[0] represents output score for positive sentiment
 # predictedSentiment[1] represents output score for negative sentiment
+print(predictedSentiment)
 
-if (predictedSentiment[0] > predictedSentiment[1]):
+if predictedSentiment[0] > predictedSentiment[1]:
     print("Positive Sentiment")
 else:
     print("Negative Sentiment")
