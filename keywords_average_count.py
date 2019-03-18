@@ -75,7 +75,7 @@ for count in count_s:
 
 count_a = 0
 for i in range(len(sentences)):
-    index = [j for j, data in enumerate(count_s[i][1:]) if data == max(count_s[i][1:])]
+    index = [j for j, data in enumerate(count_s[i]) if data == max(count_s[i])]
     label_max = set()
     for data in index:
         if aspects[data] in sentences[i]['aspectCategories']:
